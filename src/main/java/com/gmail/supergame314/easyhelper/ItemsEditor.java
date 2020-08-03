@@ -29,7 +29,7 @@ public class ItemsEditor{
                     p.sendMessage(prefix+"あなたは手に何も持ってません！");
                     return;
                 }
-                p.sendMessage(prefix+"§a§lダメージ値をチャット欄に入力してください(qと入力するとこのモードを終了します)");
+                p.sendMessage(prefix+"§a§lダメージ値をチャット欄に入力してください");
                 p.closeInventory();
                 chatting.put(p,0);
                 break;
@@ -180,25 +180,37 @@ public class ItemsEditor{
         }
     }
 
-    static void addEnchant(InventoryClickEvent event){
-        Player p = (Player) event.getWhoClicked();
+    static void addEnchant(Player p,int level){
+        ItemStack i = p.getInventory().getItemInMainHand();
+        if(i==null){
+            p.sendMessage(prefix+"§cあなたは手に何も持ってません！");
+            return;
+        }
+        if(level == 0) {
+            i.removeEnchantment(eMap.get(p));
+            p.sendMessage(prefix + "§aエンチャントを外しました");
+        }else{
+            i.addUnsafeEnchantment(eMap.get(p), level);
+            p.sendMessage(prefix + "§aエンチャントを付与しました");
+        }
         eMap.remove(p);
+    }
+
+    static void addEnchant(InventoryClickEvent event){
         switch(event.getSlot()){
+            case 0:
             case 1:
             case 2:
             case 3:
             case 4:
             case 5:
-                ItemStack i = p.getInventory().getItemInMainHand();
-                if(i==null){
-                    p.sendMessage(prefix+"あなたは手に何も持ってません！");
-                    return;
-                }
-                i.addUnsafeEnchantment(eMap.get(p),event.getSlot());
+            case 6:
+            case 7:
+                addEnchant((Player) event.getWhoClicked(),event.getSlot());
                 break;
+            }
         }
 
-    }
 
     static void changeDamage(Player p,int damage){
         ItemStack item = p.getInventory().getItemInMainHand();

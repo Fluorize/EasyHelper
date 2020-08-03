@@ -50,10 +50,10 @@ public final class EasyHelper extends JavaPlugin implements Listener {
         gui.get(0).setItem(0,getItem(Material.LOG,0,"§a§lアイテム系統","§7持っているアイテムを編集します。"));
         Inventory i = Bukkit.createInventory(null, 54,"§l[EH] アイテム系");
         i.setItem(0,getItem(Material.ENCHANTMENT_TABLE,0,"§5§lエンチャント"));
-        i.setItem(1,getItem(Material.ANVIL,0,"§5§lダメージ"));
+        i.setItem(1,getItem(Material.ANVIL,0,"§5§lダメージ","§7チャット欄を利用します"));
         i.setItem(2,getItem(Material.REDSTONE_TORCH_ON,0,"§5§l表示フラグ"));
-        i.setItem(3,getItem(Material.NAME_TAG,0,"§5§l名前"));
-        i.setItem(4,getItem(Material.SIGN_POST,0,"§5§l説明欄"));
+        i.setItem(3,getItem(Material.NAME_TAG,0,"§5§l名前","§7チャット欄を利用します"));
+        i.setItem(4,getItem(Material.SIGN,0,"§5§l説明欄","§7チャット欄を利用します"));
         gui.add(1,i);
         i=Bukkit.createInventory(null, 54,"§l[EH] エンチャント");
         i.setItem(0,getItem(Material.DIAMOND_SWORD,0,"剣に使われるエンチャント"));
@@ -72,9 +72,9 @@ public final class EasyHelper extends JavaPlugin implements Listener {
         i.setItem(15,getItem(Material.FEATHER,0,"§a§l落下耐性"));
         i.setItem(16,getItem(Material.DOUBLE_PLANT,4,"§a§l棘の鎧","§7バラの棘より。"));
         i.setItem(17,getItem(Material.CHAINMAIL_BOOTS,0,"§a§l水中歩行"));
-        i.setItem(19,getItem(Material.STONE_PICKAXE,0,"§a§l水中採掘"));
-        i.setItem(20,getItem(Material.SPONGE,0,"§a§l水中呼吸","§7何を使えばよかったんだろ"));
-        i.setItem(21,getItem(Material.ICE,0,"§a§l氷渡り","§7現実にあったらかっこいいなんて思ったり"));
+        i.setItem(20,getItem(Material.STONE_PICKAXE,0,"§a§l水中採掘"));
+        i.setItem(21,getItem(Material.SPONGE,0,"§a§l水中呼吸","§7何を使えばよかったんだろ"));
+        i.setItem(22,getItem(Material.ICE,0,"§a§l氷渡り","§7現実にあったらかっこいいなんて思ったり"));
         i.setItem(27,getItem(Material.DIAMOND_PICKAXE,0,"§a§l道具に使われるエンチャント"));
         i.setItem(29,getItem(Material.STONE_PICKAXE,0,"§a§l効率強化"));
         i.setItem(30,getItem(Material.STONE,0,"§a§lシルクタッチ"));
@@ -98,6 +98,7 @@ public final class EasyHelper extends JavaPlugin implements Listener {
         i.setItem(53,getItem(Material.MOB_SPAWNER,0,"§c§l束縛の呪い"));
         gui.add(2,i);
         gui.add(Bukkit.createInventory(null, 9,"§l[EH] エンチャント ー 強さ"));
+        gui.get(3).setItem(0,getItem(Material.BOOK,0,"§e§lOff","§7このエンチャントを外します"));
         gui.get(3).setItem(1,getItem(Material.ENCHANTED_BOOK,0,"§e§lLvl.1","§7サポートされてないレベルも選択できます。","§7エンチャントの上限はwikiなどご覧ください...."));
         gui.get(3).setItem(2,getItem(Material.ENCHANTED_BOOK,0,"§e§lLvl.2","§7サポートされてないレベルも選択できます。","§7エンチャントの上限はwikiなどご覧ください...."));
         gui.get(3).setItem(3,getItem(Material.ENCHANTED_BOOK,0,"§e§lLvl.3","§7サポートされてないレベルも選択できます。","§7エンチャントの上限はwikiなどご覧ください...."));
@@ -105,11 +106,7 @@ public final class EasyHelper extends JavaPlugin implements Listener {
         gui.get(3).setItem(5,getItem(Material.ENCHANTED_BOOK,0,"§e§lLvl.5","§7サポートされてないレベルも選択できます。","§7エンチャントの上限はwikiなどご覧ください...."));
         gui.get(3).setItem(6,getItem(Material.ENCHANTED_BOOK,0,"§c§lLvl.6","§7役に立つか知りません"));
         gui.get(3).setItem(7,getItem(Material.ENCHANTED_BOOK,0,"§c§lLvl.7","§7役に立つか知りません"));
-        gui.add(Bukkit.createInventory(null, 9,"§l[EH] エンチャント ー 隠し強さ？"));
-        gui.get(4).setItem(3,getItem(Material.ENCHANTED_BOOK,0,"§c§lLvl.10","§7何があってもわたしゃ知らない。"));
-        gui.get(4).setItem(4,getItem(Material.ENCHANTED_BOOK,0,"§c§lLvl.50","§7何があってもわたしゃ知らない。"));
-        gui.get(4).setItem(5,getItem(Material.ENCHANTED_BOOK,0,"§c§lLvl.100","§7何があってもわたしゃ知らない。"));
-
+        gui.get(3).setItem(8,getItem(Material.ENCHANTED_BOOK,0,"§c§l他","§7チャット欄を利用します"));
     }
 
     @Override
@@ -123,6 +120,7 @@ public final class EasyHelper extends JavaPlugin implements Listener {
         Player p = (Player) event.getWhoClicked();
         if (mode == -1)
             return;
+        if(event.getCurrentItem()==null)return;
         event.setCancelled(true);
         switch (mode) {
             case 0:
@@ -132,9 +130,17 @@ public final class EasyHelper extends JavaPlugin implements Listener {
                break;
             case 1:
                 ItemsEditor.ieMain(event);
+                break;
+            case 2:
+                ItemsEditor.enchantment(event);
+                break;
             case 3:
+                if (event.getSlot()==8){
+                    chatting.put(p,3);
+                }
                 ItemsEditor.addEnchant(event);
                 p.closeInventory();
+                break;
         }
 
     }
@@ -145,20 +151,37 @@ public final class EasyHelper extends JavaPlugin implements Listener {
         if (!chatting.containsKey(p))
             return;
         event.setCancelled(true);
+        String msg = event.getMessage();
         switch (chatting.get(p)){
             case 0:
                 try{
-                    ItemsEditor.changeDamage(p,Integer.parseInt(event.getMessage()));
+                    if(msg.equals("q")) {
+                        p.sendMessage(prefix+"§a入力モードを終了します");
+                        break;
+                    }
+                    ItemsEditor.changeDamage(p,Integer.parseInt(msg));
                 }catch(NumberFormatException e) {
-                    p.sendMessage(prefix+"§4§l数値を入力してください！");
+                    p.sendMessage(prefix+"§c§l数値を入力してください！");
                     return;
                 }
                 break;
             case 1:
-                ItemsEditor.changeName(p,event.getMessage());
+                ItemsEditor.changeName(p,msg);
                 break;
             case 2:
-                ItemsEditor.changeLore(p,event.getMessage());
+                ItemsEditor.changeLore(p,msg);
+                break;
+            case 3:
+                try{
+                    if(msg.equals("q")) {
+                        p.sendMessage(prefix+"§a入力モードを終了します");
+                        break;
+                    }
+                    ItemsEditor.addEnchant(p,Integer.parseInt(msg));
+                }catch(NumberFormatException e) {
+                    p.sendMessage(prefix+"§c§l数値を入力してください！");
+                    return;
+                }
                 break;
 
         }
