@@ -1,0 +1,11 @@
+name: EasyHelper
+version: ${project.version}
+main: com.gmail.supergame314.easyhelper.EasyHelper
+authors: [Super__Game]
+commands:
+  eh:
+    usage: /<command>
+    permission: easyhelper.use
+permissions:
+  easyhelper.use:
+    default: op
