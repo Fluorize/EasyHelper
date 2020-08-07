@@ -1,15 +1,17 @@
 package com.gmail.supergame314.easyhelper;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.gmail.supergame314.easyhelper.EasyHelper.*;
@@ -17,6 +19,7 @@ import static com.gmail.supergame314.easyhelper.EasyHelper.*;
 public class ItemsEditor{
 
     static Map<Player,Enchantment> eMap = new HashMap<>();
+    static Map<Inventory,Player> flagInv = new HashMap<>();
 
     static void ieMain(InventoryClickEvent event){
         Player p = (Player) event.getWhoClicked();
@@ -29,7 +32,7 @@ public class ItemsEditor{
                     p.sendMessage(prefix+"あなたは手に何も持ってません！");
                     return;
                 }
-                p.sendMessage(prefix+"§a§lダメージ値をチャット欄に入力してください");
+                p.sendMessage(prefix+"§a§lダメージ値をチャット欄に入力してください(qで終了)");
                 p.closeInventory();
                 chatting.put(p,0);
                 break;
@@ -137,19 +140,19 @@ public class ItemsEditor{
                 eMap.put(p,Enchantment.LOOT_BONUS_BLOCKS);
                 p.openInventory(gui.get(3));
                 break;
-            case 37:
+            case 38:
                 eMap.put(p,Enchantment.ARROW_INFINITE);
                 p.openInventory(gui.get(3));
                 break;
-            case 38:
+            case 39:
                 eMap.put(p,Enchantment.ARROW_KNOCKBACK);
                 p.openInventory(gui.get(3));
                 break;
-            case 39:
+            case 40:
                 eMap.put(p,Enchantment.ARROW_FIRE);
                 p.openInventory(gui.get(3));
                 break;
-            case 40:
+            case 41:
                 eMap.put(p,Enchantment.ARROW_DAMAGE);
                 p.openInventory(gui.get(3));
                 break;
@@ -238,6 +241,59 @@ public class ItemsEditor{
         item.setItemMeta(meta);
     }
 
+    public void createFlagInv(Player p){
+        Inventory i = Bukkit.createInventory(null,9);
+        reloadFlagInv(i);
+        flagInv.put(i,p);
+    }
 
+
+    public void clickFlagInv(InventoryClickEvent event){
+        Inventory i = event.getClickedInventory();
+        Player p = (Player) event.getWhoClicked();
+        ItemStack is = p.getInventory().getItemInMainHand();
+        ItemMeta m = is.getItemMeta();
+        switch (event.getSlot()){
+            case 0:
+                m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                break;
+            case 1:
+                m.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+                break;
+            case 2:
+                m.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+                break;
+            case 3:
+                m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                break;
+            case 4:
+                m.addItemFlags(ItemFlag.HIDE_DESTROYS);
+                break;
+            case 5:
+                m.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+                break;
+        }
+        is.setItemMeta(m);
+        reloadFlagInv(i);
+    }
+
+    public boolean isFlagInv(Inventory i){
+        return flagInv.containsKey(i);
+    }
+
+    public void removeFlagInv(Inventory i){
+        flagInv.remove(i);
+    }
+
+
+    private void reloadFlagInv(Inventory i){
+        ItemStack item = flagInv.get(i).getInventory().getItemInMainHand();
+        i.setItem(0,getItem(Material.ENCHANTMENT_TABLE,0,"§e§lエンチャント表示",item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS)?"§c§lしない":"§a§lする"));
+        i.setItem(1,getItem(Material.BEDROCK,0,"§e§l不可壊表示",item.getItemMeta().hasItemFlag(ItemFlag.HIDE_UNBREAKABLE)?"§c§lしない":"§a§lする"));
+        i.setItem(2,getItem(Material.BREWING_STAND_ITEM,0,"§e§lエフェクト表示",item.getItemMeta().hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)?"§c§lしない":"§a§lする"));
+        i.setItem(3,getItem(Material.DIAMOND_SWORD,0,"§e§l属性表示",item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ATTRIBUTES)?"§c§lしない":"§a§lする"));
+        i.setItem(4,getItem(Material.DIAMOND_PICKAXE,0,"§e§l破壊可能表示",item.getItemMeta().hasItemFlag(ItemFlag.HIDE_DESTROYS)?"§c§lしない":"§a§lする"));
+        i.setItem(5,getItem(Material.WOOD_BUTTON,0,"§e§l設置可能表示",item.getItemMeta().hasItemFlag(ItemFlag.HIDE_PLACED_ON)?"§c§lしない":"§a§lする"));
+    }
 
 }
